@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bootllm/llm100x-tester/internal/helpers"
-	"github.com/bootllm/tester-utils/random"
-	"github.com/bootllm/tester-utils/runner"
-	"github.com/bootllm/tester-utils/test_case_harness"
-	"github.com/bootllm/tester-utils/tester_definition"
+	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
+	"github.com/bootlab-dev/tester-utils/random"
+	"github.com/bootlab-dev/tester-utils/runner"
+	"github.com/bootlab-dev/tester-utils/test_case_harness"
+	"github.com/bootlab-dev/tester-utils/tester_definition"
 )
 
 // Scrabble 字母分值表（对齐 CS50）

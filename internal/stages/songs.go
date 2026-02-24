@@ -10,9 +10,9 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/bootllm/llm100x-tester/internal/helpers"
-	"github.com/bootllm/tester-utils/test_case_harness"
-	"github.com/bootllm/tester-utils/tester_definition"
+	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
+	"github.com/bootlab-dev/tester-utils/test_case_harness"
+	"github.com/bootlab-dev/tester-utils/tester_definition"
 )
 
 const (

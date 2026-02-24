@@ -1,5 +1,5 @@
-github.com/bootllm/tester-utils v1.1.0 h1:ec/MhrmCXFUvrlAojdxGmN2ilkZ3fzq14MGhgO+ybPY=
-github.com/bootllm/tester-utils v1.1.0/go.mod h1:lRpTQgW9hPASgXiv3h4hy1GK4bPjjRu0GqyH+96mzyo=
+github.com/bootlab-dev/tester-utils v1.1.0 h1:hTHk0cQAnVZNJ5XmpijX3gK2SOkL5GabJbwzP9v2yBc=
+github.com/bootlab-dev/tester-utils v1.1.0/go.mod h1:aobhUOjLSVPEmGEp2ww2hXNSIkh13yzdaCbPIDbicq0=
 github.com/creack/pty v1.1.24 h1:bJrF4RRfyJnbTJqzRLHzcGaZK1NeM5kTC9jGgovnR1s=
 github.com/creack/pty v1.1.24/go.mod h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

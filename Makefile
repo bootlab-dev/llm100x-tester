@@ -1,39 +1,39 @@
 .PHONY: build test clean run install uninstall
 
-# 构建 tester
+# Build tester
 build:
 	go build -o llm100x-tester .
 
-# 安装到 $GOPATH/bin (可全局使用)
+# Install to $GOPATH/bin (global access)
 install:
 	go install .
 
-# 卸载
+# Uninstall
 uninstall:
 	rm -f $(shell go env GOPATH)/bin/llm100x-tester
 
-# 运行测试
+# Run tests
 test:
 	go test -v ./...
 
-# 清理构建产物
+# Clean build artifacts
 clean:
 	rm -f llm100x-tester
 	go clean
 
-# 运行 tester (需要指定工作目录)
+# Run tester (requires working directory)
 run:
 	go run . $(ARGS)
 
-# 安装依赖
+# Install dependencies
 deps:
 	go mod download
 	go mod tidy
 
-# 格式化代码
+# Format code
 fmt:
 	go fmt ./...
 
-# 代码检查
+# Lint code
 lint:
 	golangci-lint run ./...

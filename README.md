@@ -1,31 +1,31 @@
 # LLM100X Tester
 
-LLM100X 课程自动化测试工具。
+Automated testing tool for the LLM100X course.
 
-## 方式一：源码运行
+## Option 1: Build from Source
 
 ```bash
-git clone https://github.com/bootllm/llm100x-tester
+git clone https://github.com/bootlab-dev/llm100x-tester
 cd llm100x-tester
 go build .
 ./llm100x-tester -s hello -d ~/my-solution/hello
 ```
 
-**环境依赖：** Go 1.24+, clang, python3, sqlite3
+**Dependencies:** Go 1.24+, clang, python3, sqlite3
 
-## 方式二：Docker 镜像
+## Option 2: Docker Image
 
-**快速开始**
+**Quick Start**
 
 ```bash
-cd ~/my-solution  # 你的代码根目录
+cd ~/my-solution  # your solution root directory
 docker pull bootcs/llm100x-tester
 docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/workspace" bootcs/llm100x-tester -s hello -d /workspace/hello
 ```
 
-**简化脚本（推荐）**
+**Simplified script (recommended)**
 
-在代码根目录创建 `test.sh`：
+Create `test.sh` in your solution root:
 
 ```bash
 #!/bin/bash
@@ -33,15 +33,15 @@ docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/workspace" bootcs/llm100x-t
   -s "${1:-hello}" -d "/workspace/${1:-hello}"
 ```
 
-使用：`chmod +x test.sh && ./test.sh hello`
+Usage: `chmod +x test.sh && ./test.sh hello`
 
-**本地构建（可选）**
+**Local build (optional)**
 
 ```bash
-git clone https://github.com/bootllm/llm100x-tester
+git clone https://github.com/bootlab-dev/llm100x-tester
 cd llm100x-tester
 docker build -t my-tester .
-# 使用: docker run --rm --user $(id -u):$(id -g) -v ~/my-solution:/workspace my-tester -s hello -d /workspace/hello
+# Usage: docker run --rm --user $(id -u):$(id -g) -v ~/my-solution:/workspace my-tester -s hello -d /workspace/hello
 ```
 
 ## License

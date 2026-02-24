@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bootllm/tester-utils/runner"
-	"github.com/bootllm/tester-utils/test_case_harness"
-	"github.com/bootllm/tester-utils/tester_definition"
+	"github.com/bootlab-dev/tester-utils/runner"
+	"github.com/bootlab-dev/tester-utils/test_case_harness"
+	"github.com/bootlab-dev/tester-utils/tester_definition"
 )
 
 func runoffTestCase() tester_definition.TestCase {
