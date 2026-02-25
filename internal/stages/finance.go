@@ -33,9 +33,10 @@ const (
 
 func financeTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "finance",
-		Timeout:  120 * time.Second,
-		TestFunc: testFinance,
+		Slug:          "finance",
+		Timeout:       120 * time.Second,
+		TestFunc:      testFinance,
+		RequiredFiles: []string{"app.py"},
 	}
 }
 
@@ -178,13 +179,6 @@ func testFinance(harness *test_case_harness.TestCaseHarness) error {
 	}
 	workDir = absWorkDir
 	logger.Infof("Working directory: %s", workDir)
-
-	// 1. Check app.py exists
-	logger.Infof("Checking app.py exists...")
-	if !harness.FileExists("app.py") {
-		return fmt.Errorf("app.py does not exist")
-	}
-	logger.Successf("app.py exists")
 
 	// Copy finance.db to a temp location to avoid modifying the original
 	origDB := filepath.Join(workDir, "finance.db")

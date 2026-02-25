@@ -22,9 +22,10 @@ const (
 
 func songsTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "songs",
-		Timeout:  60 * time.Second,
-		TestFunc: testSongs,
+		Slug:          "songs",
+		Timeout:       60 * time.Second,
+		TestFunc:      testSongs,
+		RequiredFiles: []string{"1.sql", "2.sql", "3.sql", "4.sql", "5.sql", "6.sql", "7.sql", "answers.txt"},
 	}
 }
 
@@ -32,21 +33,8 @@ func testSongs(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 SQL 文件存在 (1.sql - 7.sql，与 CS50 check50 一致)
-	logger.Infof("Checking SQL files exist...")
-	for i := 1; i <= 7; i++ {
-		filename := fmt.Sprintf("%d.sql", i)
-		if !harness.FileExists(filename) {
-			return fmt.Errorf("%s does not exist", filename)
-		}
-	}
-	logger.Successf("SQL files exist")
-
-	// 2. 检查 answers.txt 存在且包含足够长的反思
-	logger.Infof("Checking answers.txt exists...")
-	if !harness.FileExists("answers.txt") {
-		return fmt.Errorf("answers.txt does not exist")
-	}
+	// 检查 answers.txt 包含足够长的反思
+	logger.Infof("Checking answers.txt reflection...")
 	answersContent, err := os.ReadFile(filepath.Join(workDir, "answers.txt"))
 	if err != nil {
 		return fmt.Errorf("failed to read answers.txt: %v", err)
@@ -55,9 +43,9 @@ func testSongs(harness *test_case_harness.TestCaseHarness) error {
 	if len(words) < MinReflectionWords {
 		return fmt.Errorf("answers.txt does not contain a sufficiently long reflection (need at least %d words, got %d)", MinReflectionWords, len(words))
 	}
-	logger.Successf("answers.txt exists")
+	logger.Successf("answers.txt reflection OK")
 
-	// 3. 打开数据库
+	// 打开数据库
 	dbPath := filepath.Join(workDir, "songs.db")
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {

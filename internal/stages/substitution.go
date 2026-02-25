@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
 	"github.com/bootlab-dev/tester-utils/runner"
 	"github.com/bootlab-dev/tester-utils/test_case_harness"
 	"github.com/bootlab-dev/tester-utils/tester_definition"
@@ -12,9 +11,16 @@ import (
 
 func substitutionTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "substitution",
-		Timeout:  30 * time.Second,
-		TestFunc: testSubstitution,
+		Slug:          "substitution",
+		Timeout:       30 * time.Second,
+		TestFunc:      testSubstitution,
+		RequiredFiles: []string{"substitution.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "substitution.c",
+			Output:           "substitution",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -22,21 +28,7 @@ func testSubstitution(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 substitution.c 文件存在
-	logger.Infof("Checking substitution.c exists...")
-	if !harness.FileExists("substitution.c") {
-		return fmt.Errorf("substitution.c does not exist")
-	}
-	logger.Successf("substitution.c exists")
-
-	// 2. 编译 substitution.c
-	logger.Infof("Compiling substitution.c...")
-	if err := helpers.CompileC(workDir, "substitution.c", "substitution", true); err != nil {
-		return fmt.Errorf("substitution.c does not compile: %v", err)
-	}
-	logger.Successf("substitution.c compiles")
-
-	// 3. 加密测试用例（完全对齐 CS50 check50）
+	// 加密测试用例（完全对齐 CS50 check50）
 	encryptTests := []struct {
 		key        string
 		plaintext  string

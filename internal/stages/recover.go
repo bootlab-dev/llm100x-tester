@@ -67,9 +67,16 @@ var recoverHashes = []string{
 
 func recoverTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "recover",
-		Timeout:  60 * time.Second,
-		TestFunc: testRecover,
+		Slug:          "recover",
+		Timeout:       60 * time.Second,
+		TestFunc:      testRecover,
+		RequiredFiles: []string{"recover.c", "card.raw"},
+		CompileStep: &tester_definition.CompileStep{
+			Language: "c",
+			Source:   "recover.c",
+			Output:   "recover",
+			Flags:    []string{"-ggdb3", "-gdwarf-4", "-O0", "-Qunused-arguments", "-std=c11", "-Wextra", "-Wno-sign-compare", "-Wno-unused-parameter", "-Wno-unused-variable"},
+		},
 	}
 }
 
@@ -77,34 +84,9 @@ func testRecover(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 recover.c 文件存在
-	logger.Infof("Checking recover.c exists...")
-	if !harness.FileExists("recover.c") {
-		return fmt.Errorf("recover.c does not exist")
-	}
-	logger.Successf("recover.c exists")
-
-	// 2. 检查 card.raw 存在
-	if !harness.FileExists("card.raw") {
-		return fmt.Errorf("card.raw does not exist")
-	}
-
-	// 3. 编译 recover
-	logger.Infof("Compiling recover.c...")
-	cmd := exec.Command("clang",
-		"-ggdb3", "-gdwarf-4", "-O0", "-Qunused-arguments",
-		"-std=c11", "-Wall", "-Werror", "-Wextra",
-		"-Wno-sign-compare", "-Wno-unused-parameter", "-Wno-unused-variable",
-		"-lm", "-o", "recover", "recover.c")
-	cmd.Dir = workDir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("recover.c does not compile: %s\n%s", err, string(out))
-	}
-	logger.Successf("recover.c compiles")
-
-	// 4. 测试无参数时的行为
+	// 测试无参数时的行为
 	logger.Infof("Testing handles lack of forensic image...")
-	cmd = exec.Command("./recover")
+	cmd := exec.Command("./recover")
 	cmd.Dir = workDir
 	if err := cmd.Run(); err == nil {
 		return fmt.Errorf("program should exit with code 1 when no arguments provided")

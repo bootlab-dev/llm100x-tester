@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
 	"github.com/bootlab-dev/tester-utils/runner"
 	"github.com/bootlab-dev/tester-utils/test_case_harness"
 	"github.com/bootlab-dev/tester-utils/tester_definition"
@@ -12,9 +11,16 @@ import (
 
 func cashTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "cash",
-		Timeout:  30 * time.Second,
-		TestFunc: testCash,
+		Slug:          "cash",
+		Timeout:       30 * time.Second,
+		TestFunc:      testCash,
+		RequiredFiles: []string{"cash.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "cash.c",
+			Output:           "cash",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -22,21 +28,7 @@ func testCash(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 cash.c 文件存在
-	logger.Infof("Checking cash.c exists...")
-	if !harness.FileExists("cash.c") {
-		return fmt.Errorf("cash.c does not exist")
-	}
-	logger.Successf("cash.c exists")
-
-	// 2. 编译 cash.c
-	logger.Infof("Compiling cash.c...")
-	if err := helpers.CompileC(workDir, "cash.c", "cash", true); err != nil {
-		return fmt.Errorf("cash.c does not compile: %v", err)
-	}
-	logger.Successf("cash.c compiles")
-
-	// 3. 测试有效输入
+	// 测试有效输入
 	// 对齐 CS50 check50 的测试用例
 	validTests := []struct {
 		input    string

@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
 	"github.com/bootlab-dev/tester-utils/runner"
 	"github.com/bootlab-dev/tester-utils/test_case_harness"
 	"github.com/bootlab-dev/tester-utils/tester_definition"
@@ -15,9 +14,16 @@ import (
 
 func marioLessTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "mario-less",
-		Timeout:  30 * time.Second,
-		TestFunc: testMarioLess,
+		Slug:          "mario-less",
+		Timeout:       30 * time.Second,
+		TestFunc:      testMarioLess,
+		RequiredFiles: []string{"mario.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "mario.c",
+			Output:           "mario",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -25,21 +31,7 @@ func testMarioLess(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 mario.c 文件存在
-	logger.Infof("Checking mario.c exists...")
-	if !harness.FileExists("mario.c") {
-		return fmt.Errorf("mario.c does not exist")
-	}
-	logger.Successf("mario.c exists")
-
-	// 2. 编译 mario.c
-	logger.Infof("Compiling mario.c...")
-	if err := helpers.CompileC(workDir, "mario.c", "mario", true); err != nil {
-		return fmt.Errorf("mario.c does not compile: %v", err)
-	}
-	logger.Successf("mario.c compiles")
-
-	// 3. 测试拒绝无效输入 (对齐 CS50 check50)
+	// 测试拒绝无效输入 (对齐 CS50 check50)
 	// 使用交互模式: Start() -> SendLine() -> Reject()
 	rejectTests := []struct {
 		input string

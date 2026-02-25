@@ -14,9 +14,10 @@ import (
 
 func fiftyvilleTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "fiftyville",
-		Timeout:  60 * time.Second,
-		TestFunc: testFiftyville,
+		Slug:          "fiftyville",
+		Timeout:       60 * time.Second,
+		TestFunc:      testFiftyville,
+		RequiredFiles: []string{"log.sql", "answers.txt"},
 	}
 }
 
@@ -24,17 +25,7 @@ func testFiftyville(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 log.sql 和 answers.txt 存在
-	logger.Infof("Checking log.sql and answers.txt exist...")
-	if !harness.FileExists("log.sql") {
-		return fmt.Errorf("log.sql does not exist")
-	}
-	if !harness.FileExists("answers.txt") {
-		return fmt.Errorf("answers.txt does not exist")
-	}
-	logger.Successf("log.sql and answers.txt exist")
-
-	// 2. 检查 log.sql 包含 SELECT 查询
+	// 检查 log.sql 包含 SELECT 查询
 	logger.Infof("Checking log file contains SELECT queries...")
 	logContent, err := os.ReadFile(filepath.Join(workDir, "log.sql"))
 	if err != nil {

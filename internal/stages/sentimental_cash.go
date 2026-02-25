@@ -11,9 +11,10 @@ import (
 
 func sentimentalCashTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "sentimental-cash",
-		Timeout:  30 * time.Second,
-		TestFunc: testSentimentalCash,
+		Slug:          "sentimental-cash",
+		Timeout:       30 * time.Second,
+		TestFunc:      testSentimentalCash,
+		RequiredFiles: []string{"cash.py"},
 	}
 }
 
@@ -21,14 +22,7 @@ func testSentimentalCash(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 cash.py 文件存在
-	logger.Infof("Checking cash.py exists...")
-	if !harness.FileExists("cash.py") {
-		return fmt.Errorf("cash.py does not exist")
-	}
-	logger.Successf("cash.py exists")
-
-	// 2. 测试有效输入（对齐 CS50 check50，使用浮点数美元）
+	// 测试有效输入（对齐 CS50 check50，使用浮点数美元）
 	validTests := []struct {
 		input    string
 		expected string

@@ -15,9 +15,10 @@ import (
 
 func moviesTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "movies",
-		Timeout:  60 * time.Second,
-		TestFunc: testMovies,
+		Slug:          "movies",
+		Timeout:       60 * time.Second,
+		TestFunc:      testMovies,
+		RequiredFiles: []string{"1.sql", "2.sql", "3.sql", "4.sql", "5.sql", "6.sql", "7.sql", "8.sql", "9.sql", "10.sql", "11.sql", "12.sql", "13.sql"},
 	}
 }
 
@@ -25,17 +26,7 @@ func testMovies(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 SQL 文件存在 (1.sql - 13.sql)
-	logger.Infof("Checking SQL files exist...")
-	for i := 1; i <= 13; i++ {
-		filename := fmt.Sprintf("%d.sql", i)
-		if !harness.FileExists(filename) {
-			return fmt.Errorf("%s does not exist", filename)
-		}
-	}
-	logger.Successf("SQL files exist")
-
-	// 2. 打开数据库
+	// 打开数据库
 	dbPath := filepath.Join(workDir, "movies.db")
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {

@@ -31,9 +31,16 @@ var hashesDouble = []string{
 
 func volumeTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "volume",
-		Timeout:  30 * time.Second,
-		TestFunc: testVolume,
+		Slug:          "volume",
+		Timeout:       30 * time.Second,
+		TestFunc:      testVolume,
+		RequiredFiles: []string{"volume.c", "input.wav"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "volume.c",
+			Output:           "volume",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -41,31 +48,10 @@ func testVolume(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 volume.c 文件存在
-	logger.Infof("Checking volume.c exists...")
-	if !harness.FileExists("volume.c") {
-		return fmt.Errorf("volume.c does not exist")
-	}
-	logger.Successf("volume.c exists")
-
-	// 2. 编译 volume.c
-	logger.Infof("Compiling volume.c...")
-	cmd := exec.Command("clang", "-o", "volume", "volume.c", "-I..", "-lm", "-Wall", "-Werror")
-	cmd.Dir = workDir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("volume.c does not compile: %s\n%s", err, string(out))
-	}
-	logger.Successf("volume compiles")
-
-	// 3. 检查 input.wav 存在
-	if !harness.FileExists("input.wav") {
-		return fmt.Errorf("input.wav does not exist")
-	}
-
-	// 4. 测试 factor 0.5
+	// 测试 factor 0.5
 	logger.Infof("Testing reduces audio volume, factor of 0.5 correctly...")
 	outputPath := filepath.Join(workDir, "output.wav")
-	cmd = exec.Command("./volume", "input.wav", "output.wav", "0.5")
+	cmd := exec.Command("./volume", "input.wav", "output.wav", "0.5")
 	cmd.Dir = workDir
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("volume failed with factor 0.5: %s\n%s", err, string(out))

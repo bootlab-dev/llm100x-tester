@@ -5,7 +5,7 @@ go 1.24
 toolchain go1.24.12
 
 require (
-	github.com/bootlab-dev/tester-utils v1.1.0
+	github.com/bootlab-dev/tester-utils v1.2.0
 	github.com/mattn/go-sqlite3 v1.14.33
 	github.com/stretchr/testify v1.10.0
 )

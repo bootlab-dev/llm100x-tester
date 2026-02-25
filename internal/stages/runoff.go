@@ -17,9 +17,16 @@ import (
 
 func runoffTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "runoff",
-		Timeout:  60 * time.Second,
-		TestFunc: testRunoff,
+		Slug:          "runoff",
+		Timeout:       60 * time.Second,
+		TestFunc:      testRunoff,
+		RequiredFiles: []string{"runoff.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "runoff.c",
+			Output:           "runoff",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -27,23 +34,7 @@ func testRunoff(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 runoff.c 文件存在
-	logger.Infof("Checking runoff.c exists...")
-	if !harness.FileExists("runoff.c") {
-		return fmt.Errorf("runoff.c does not exist")
-	}
-	logger.Successf("runoff.c exists")
-
-	// 2. 编译 runoff.c (确保能编译)
-	logger.Infof("Compiling runoff.c...")
-	cmd := exec.Command("clang", "-o", "runoff", "runoff.c", "-I..", "-lm", "-Wall", "-Werror")
-	cmd.Dir = workDir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("runoff.c does not compile: %s\n%s", err, string(out))
-	}
-	logger.Successf("runoff compiles")
-
-	// 3. 创建测试程序
+	// 构建测试套件
 	// 读取学生的 runoff.c，将 main 重命名为 distro_main
 	runoffCode, err := harness.ReadFile("runoff.c")
 	if err != nil {
@@ -68,7 +59,7 @@ func testRunoff(harness *test_case_harness.TestCaseHarness) error {
 
 	// 编译测试程序
 	logger.Infof("Compiling test harness...")
-	cmd = exec.Command("clang", "-o", "runoff_test", "runoff_combined_test.c", "-I..", "-lm", "-Wall")
+	cmd := exec.Command("clang", "-o", "runoff_test", "runoff_combined_test.c", "-I..", "-lm", "-Wall")
 	cmd.Dir = workDir
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("test harness does not compile: %s\n%s", err, string(out))

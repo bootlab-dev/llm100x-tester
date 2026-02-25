@@ -14,9 +14,10 @@ import (
 
 func filterLessTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "filter-less",
-		Timeout:  60 * time.Second,
-		TestFunc: testFilterLess,
+		Slug:          "filter-less",
+		Timeout:       60 * time.Second,
+		TestFunc:      testFilterLess,
+		RequiredFiles: []string{"helpers.c", "bmp.h", "helpers.h", "testing.c"},
 	}
 }
 
@@ -24,21 +25,7 @@ func testFilterLess(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 helpers.c 文件存在
-	logger.Infof("Checking helpers.c exists...")
-	if !harness.FileExists("helpers.c") {
-		return fmt.Errorf("helpers.c does not exist")
-	}
-	logger.Successf("helpers.c exists")
-
-	// 2. 检查必需的头文件和测试文件
-	for _, file := range []string{"bmp.h", "helpers.h", "testing.c"} {
-		if !harness.FileExists(file) {
-			return fmt.Errorf("%s does not exist", file)
-		}
-	}
-
-	// 3. 编译 filter
+	// 编译 filter
 	logger.Infof("Compiling filter...")
 	cmd := exec.Command("clang",
 		"-ggdb3", "-gdwarf-4", "-O0", "-Qunused-arguments",

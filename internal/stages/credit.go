@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
 	"github.com/bootlab-dev/tester-utils/runner"
 	"github.com/bootlab-dev/tester-utils/test_case_harness"
 	"github.com/bootlab-dev/tester-utils/tester_definition"
@@ -12,9 +11,16 @@ import (
 
 func creditTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "credit",
-		Timeout:  30 * time.Second,
-		TestFunc: testCredit,
+		Slug:          "credit",
+		Timeout:       30 * time.Second,
+		TestFunc:      testCredit,
+		RequiredFiles: []string{"credit.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "credit.c",
+			Output:           "credit",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -22,21 +28,7 @@ func testCredit(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 credit.c 文件存在
-	logger.Infof("Checking credit.c exists...")
-	if !harness.FileExists("credit.c") {
-		return fmt.Errorf("credit.c does not exist")
-	}
-	logger.Successf("credit.c exists")
-
-	// 2. 编译 credit.c
-	logger.Infof("Compiling credit.c...")
-	if err := helpers.CompileC(workDir, "credit.c", "credit", true); err != nil {
-		return fmt.Errorf("credit.c does not compile: %v", err)
-	}
-	logger.Successf("credit.c compiles")
-
-	// 3. 测试用例 (对齐 CS50 check50)
+	// 测试用例 (对齐 CS50 check50)
 	tests := []struct {
 		input    string
 		expected string

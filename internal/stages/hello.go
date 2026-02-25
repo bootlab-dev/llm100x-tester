@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
 	"github.com/bootlab-dev/tester-utils/runner"
 	"github.com/bootlab-dev/tester-utils/test_case_harness"
 	"github.com/bootlab-dev/tester-utils/tester_definition"
@@ -12,9 +11,16 @@ import (
 
 func helloTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "hello",
-		Timeout:  30 * time.Second,
-		TestFunc: testHello,
+		Slug:          "hello",
+		Timeout:       30 * time.Second,
+		TestFunc:      testHello,
+		RequiredFiles: []string{"hello.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "hello.c",
+			Output:           "hello",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -22,21 +28,7 @@ func testHello(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 hello.c 文件存在
-	logger.Infof("Checking hello.c exists...")
-	if !harness.FileExists("hello.c") {
-		return fmt.Errorf("hello.c does not exist")
-	}
-	logger.Successf("hello.c exists")
-
-	// 2. 编译 hello.c
-	logger.Infof("Compiling hello.c...")
-	if err := helpers.CompileC(workDir, "hello.c", "hello", true); err != nil {
-		return fmt.Errorf("hello.c does not compile: %v", err)
-	}
-	logger.Successf("hello.c compiles")
-
-	// 3. 测试用例：对齐 CS50 check50 官方测试
+	// 测试用例：对齐 CS50 check50 官方测试
 	testCases := []struct {
 		name     string
 		expected string

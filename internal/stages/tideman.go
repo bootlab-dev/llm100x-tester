@@ -16,9 +16,16 @@ import (
 
 func tidemanTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "tideman",
-		Timeout:  60 * time.Second,
-		TestFunc: testTideman,
+		Slug:          "tideman",
+		Timeout:       60 * time.Second,
+		TestFunc:      testTideman,
+		RequiredFiles: []string{"tideman.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "tideman.c",
+			Output:           "tideman",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -26,23 +33,7 @@ func testTideman(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 tideman.c 文件存在
-	logger.Infof("Checking tideman.c exists...")
-	if !harness.FileExists("tideman.c") {
-		return fmt.Errorf("tideman.c does not exist")
-	}
-	logger.Successf("tideman.c exists")
-
-	// 2. 编译 tideman.c (确保能编译)
-	logger.Infof("Compiling tideman.c...")
-	cmd := exec.Command("clang", "-o", "tideman", "tideman.c", "-I..", "-lm", "-Wall", "-Werror")
-	cmd.Dir = workDir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("tideman.c does not compile: %s\n%s", err, string(out))
-	}
-	logger.Successf("tideman compiles")
-
-	// 3. 创建测试程序
+	// 构建测试套件
 	// 读取学生的 tideman.c，将 main 重命名为 distro_main
 	tidemanCode, err := harness.ReadFile("tideman.c")
 	if err != nil {
@@ -67,7 +58,7 @@ func testTideman(harness *test_case_harness.TestCaseHarness) error {
 
 	// 编译测试程序
 	logger.Infof("Compiling test harness...")
-	cmd = exec.Command("clang", "-o", "tideman_test", "tideman_combined_test.c", "-I..", "-lm", "-Wall")
+	cmd := exec.Command("clang", "-o", "tideman_test", "tideman_combined_test.c", "-I..", "-lm", "-Wall")
 	cmd.Dir = workDir
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("test harness does not compile: %s\n%s", err, string(out))

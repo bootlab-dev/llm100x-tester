@@ -17,9 +17,16 @@ import (
 
 func pluralityTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "plurality",
-		Timeout:  30 * time.Second,
-		TestFunc: testPlurality,
+		Slug:          "plurality",
+		Timeout:       30 * time.Second,
+		TestFunc:      testPlurality,
+		RequiredFiles: []string{"plurality.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "plurality.c",
+			Output:           "plurality",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -27,23 +34,7 @@ func testPlurality(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 plurality.c 文件存在
-	logger.Infof("Checking plurality.c exists...")
-	if !harness.FileExists("plurality.c") {
-		return fmt.Errorf("plurality.c does not exist")
-	}
-	logger.Successf("plurality.c exists")
-
-	// 2. 编译 plurality.c (确保能编译)
-	logger.Infof("Compiling plurality.c...")
-	cmd := exec.Command("clang", "-o", "plurality", "plurality.c", "-I..", "-lm", "-Wall", "-Werror")
-	cmd.Dir = workDir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("plurality.c does not compile: %s\n%s", err, string(out))
-	}
-	logger.Successf("plurality compiles")
-
-	// 3. 创建测试程序
+	// 构建测试套件
 	// 读取学生的 plurality.c，将 main 重命名为 distro_main
 	pluralityCode, err := harness.ReadFile("plurality.c")
 	if err != nil {
@@ -70,7 +61,7 @@ func testPlurality(harness *test_case_harness.TestCaseHarness) error {
 
 	// 编译测试程序
 	logger.Infof("Compiling test harness...")
-	cmd = exec.Command("clang", "-o", "plurality_test", "plurality_combined_test.c", "-I..", "-lm", "-Wall")
+	cmd := exec.Command("clang", "-o", "plurality_test", "plurality_combined_test.c", "-I..", "-lm", "-Wall")
 	cmd.Dir = workDir
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("test harness does not compile: %s\n%s", err, string(out))

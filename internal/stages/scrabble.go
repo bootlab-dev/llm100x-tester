@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
 	"github.com/bootlab-dev/tester-utils/random"
 	"github.com/bootlab-dev/tester-utils/runner"
 	"github.com/bootlab-dev/tester-utils/test_case_harness"
@@ -28,9 +27,16 @@ func getOnePointLetters() []string {
 
 func scrabbleTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "scrabble",
-		Timeout:  30 * time.Second,
-		TestFunc: testScrabble,
+		Slug:          "scrabble",
+		Timeout:       30 * time.Second,
+		TestFunc:      testScrabble,
+		RequiredFiles: []string{"scrabble.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "scrabble.c",
+			Output:           "scrabble",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -38,21 +44,7 @@ func testScrabble(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 scrabble.c 文件存在
-	logger.Infof("Checking scrabble.c exists...")
-	if !harness.FileExists("scrabble.c") {
-		return fmt.Errorf("scrabble.c does not exist")
-	}
-	logger.Successf("scrabble.c exists")
-
-	// 2. 编译 scrabble.c
-	logger.Infof("Compiling scrabble.c...")
-	if err := helpers.CompileC(workDir, "scrabble.c", "scrabble", true); err != nil {
-		return fmt.Errorf("scrabble.c does not compile: %v", err)
-	}
-	logger.Successf("scrabble.c compiles")
-
-	// 3. 测试用例（完全对齐 CS50 check50）
+	// 测试用例（完全对齐 CS50 check50）
 	testCases := []struct {
 		word1    string
 		word2    string

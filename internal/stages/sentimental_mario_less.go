@@ -14,9 +14,10 @@ import (
 
 func sentimentalMarioLessTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "sentimental-mario-less",
-		Timeout:  30 * time.Second,
-		TestFunc: testSentimentalMarioLess,
+		Slug:          "sentimental-mario-less",
+		Timeout:       30 * time.Second,
+		TestFunc:      testSentimentalMarioLess,
+		RequiredFiles: []string{"mario.py"},
 	}
 }
 
@@ -24,14 +25,7 @@ func testSentimentalMarioLess(harness *test_case_harness.TestCaseHarness) error 
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 mario.py 文件存在
-	logger.Infof("Checking mario.py exists...")
-	if !harness.FileExists("mario.py") {
-		return fmt.Errorf("mario.py does not exist")
-	}
-	logger.Successf("mario.py exists")
-
-	// 2. 测试拒绝无效输入 (对齐 CS50 check50)
+	// 测试拒绝无效输入 (对齐 CS50 check50)
 	rejectTests := []struct {
 		input string
 		name  string

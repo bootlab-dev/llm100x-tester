@@ -11,9 +11,10 @@ import (
 
 func dnaTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "dna",
-		Timeout:  60 * time.Second,
-		TestFunc: testDna,
+		Slug:          "dna",
+		Timeout:       60 * time.Second,
+		TestFunc:      testDna,
+		RequiredFiles: []string{"dna.py"},
 	}
 }
 
@@ -21,14 +22,7 @@ func testDna(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 dna.py 文件存在
-	logger.Infof("Checking dna.py exists...")
-	if !harness.FileExists("dna.py") {
-		return fmt.Errorf("dna.py does not exist")
-	}
-	logger.Successf("dna.py exists")
-
-	// 2. 测试用例 (对齐 CS50 check50 的 test1-test20)
+	// 测试用例 (对齐 CS50 check50 的 test1-test20)
 	tests := []struct {
 		database string
 		sequence string

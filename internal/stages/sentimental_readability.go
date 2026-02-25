@@ -11,9 +11,10 @@ import (
 
 func sentimentalReadabilityTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "sentimental-readability",
-		Timeout:  30 * time.Second,
-		TestFunc: testSentimentalReadability,
+		Slug:          "sentimental-readability",
+		Timeout:       30 * time.Second,
+		TestFunc:      testSentimentalReadability,
+		RequiredFiles: []string{"readability.py"},
 	}
 }
 
@@ -21,14 +22,7 @@ func testSentimentalReadability(harness *test_case_harness.TestCaseHarness) erro
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 readability.py 文件存在
-	logger.Infof("Checking readability.py exists...")
-	if !harness.FileExists("readability.py") {
-		return fmt.Errorf("readability.py does not exist")
-	}
-	logger.Successf("readability.py exists")
-
-	// 2. 测试用例 (对齐 CS50 check50)
+	// 测试用例 (对齐 CS50 check50)
 	tests := []struct {
 		input    string
 		expected string

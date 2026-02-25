@@ -14,31 +14,20 @@ import (
 
 func spellerTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "speller",
-		Timeout:  60 * time.Second,
-		TestFunc: testSpeller,
+		Slug:          "speller",
+		Timeout:       60 * time.Second,
+		TestFunc:      testSpeller,
+		RequiredFiles: []string{"dictionary.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language: "make",
+			Output:   "speller",
+		},
 	}
 }
 
 func testSpeller(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
-
-	// 1. 检查文件存在
-	logger.Infof("Checking dictionary.c exists...")
-	if !harness.FileExists("dictionary.c") {
-		return fmt.Errorf("dictionary.c does not exist")
-	}
-	logger.Successf("dictionary.c exists")
-
-	// 2. 编译 speller
-	logger.Infof("Compiling speller...")
-	cmd := exec.Command("make", "speller")
-	cmd.Dir = workDir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("speller does not compile: %s\n%s", err, string(out))
-	}
-	logger.Successf("speller compiles")
 
 	// 使用 CS50 提供的测试目录进行测试
 	// 每个测试目录包含 dict 和 text 文件
@@ -88,7 +77,7 @@ func testSpeller(harness *test_case_harness.TestCaseHarness) error {
 		}
 
 		// 运行 speller
-		cmd = exec.Command("./speller", dictPath, textPath)
+		cmd := exec.Command("./speller", dictPath, textPath)
 		cmd.Dir = workDir
 		out, err := cmd.CombinedOutput()
 		if err != nil {
@@ -126,7 +115,7 @@ func testSpeller(harness *test_case_harness.TestCaseHarness) error {
 	logger.Infof("Testing handles apostrophes properly...")
 
 	// 测试 with apostrophe in dict, with apostrophe in text
-	cmd = exec.Command("./speller", "apostrophe/with/dict", "apostrophe/with/text")
+	cmd := exec.Command("./speller", "apostrophe/with/dict", "apostrophe/with/text")
 	cmd.Dir = workDir
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -141,7 +130,7 @@ func testSpeller(harness *test_case_harness.TestCaseHarness) error {
 	// 测试大字典 (可选，验证性能)
 	logger.Infof("Testing handles large dictionary...")
 	if harness.FileExists("large/dict") && harness.FileExists("large/text") {
-		cmd = exec.Command("./speller", "large/dict", "large/text")
+		cmd := exec.Command("./speller", "large/dict", "large/text")
 		cmd.Dir = workDir
 		out, err := cmd.CombinedOutput()
 		if err != nil {
@@ -157,7 +146,7 @@ func testSpeller(harness *test_case_harness.TestCaseHarness) error {
 		logger.Infof("valgrind not available, skipping memory check")
 	} else {
 		// 使用 basic 目录进行内存检查
-		cmd = exec.Command("valgrind", "--error-exitcode=1", "--leak-check=full",
+		cmd := exec.Command("valgrind", "--error-exitcode=1", "--leak-check=full",
 			"--show-leak-kinds=all", "--errors-for-leak-kinds=all", "-q",
 			"./speller", "basic/dict", "basic/text")
 		cmd.Dir = workDir

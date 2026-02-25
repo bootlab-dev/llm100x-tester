@@ -12,23 +12,17 @@ import (
 
 func sortTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "sort",
-		Timeout:  30 * time.Second,
-		TestFunc: testSort,
+		Slug:          "sort",
+		Timeout:       30 * time.Second,
+		TestFunc:      testSort,
+		RequiredFiles: []string{"answers.txt"},
 	}
 }
 
 func testSort(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 
-	// 1. 检查 answers.txt 文件存在
-	logger.Infof("Checking answers.txt exists...")
-	if !harness.FileExists("answers.txt") {
-		return fmt.Errorf("answers.txt does not exist")
-	}
-	logger.Successf("answers.txt exists")
-
-	// 2. 读取 answers.txt 内容
+	// 读取 answers.txt 内容
 	content, err := harness.ReadFile("answers.txt")
 	if err != nil {
 		return fmt.Errorf("could not read answers.txt: %v", err)

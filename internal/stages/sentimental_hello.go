@@ -11,9 +11,10 @@ import (
 
 func sentimentalHelloTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "sentimental-hello",
-		Timeout:  30 * time.Second,
-		TestFunc: testSentimentalHello,
+		Slug:          "sentimental-hello",
+		Timeout:       30 * time.Second,
+		TestFunc:      testSentimentalHello,
+		RequiredFiles: []string{"hello.py"},
 	}
 }
 
@@ -21,14 +22,7 @@ func testSentimentalHello(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 hello.py 文件存在
-	logger.Infof("Checking hello.py exists...")
-	if !harness.FileExists("hello.py") {
-		return fmt.Errorf("hello.py does not exist")
-	}
-	logger.Successf("hello.py exists")
-
-	// 2. 测试用例：对齐 CS50 check50 官方测试
+	// 测试用例：对齐 CS50 check50 官方测试
 	testCases := []struct {
 		name     string
 		expected string

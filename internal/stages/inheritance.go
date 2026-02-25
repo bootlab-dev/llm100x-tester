@@ -15,9 +15,16 @@ import (
 
 func inheritanceTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "inheritance",
-		Timeout:  30 * time.Second,
-		TestFunc: testInheritance,
+		Slug:          "inheritance",
+		Timeout:       30 * time.Second,
+		TestFunc:      testInheritance,
+		RequiredFiles: []string{"inheritance.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language: "c",
+			Source:   "inheritance.c",
+			Output:   "inheritance",
+			Flags:    []string{"-ggdb3", "-gdwarf-4", "-O0", "-Qunused-arguments", "-std=c11", "-Wextra", "-Wno-sign-compare", "-Wno-unused-parameter", "-Wno-unused-variable"},
+		},
 	}
 }
 
@@ -25,27 +32,7 @@ func testInheritance(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 inheritance.c 文件存在
-	logger.Infof("Checking inheritance.c exists...")
-	if !harness.FileExists("inheritance.c") {
-		return fmt.Errorf("inheritance.c does not exist")
-	}
-	logger.Successf("inheritance.c exists")
-
-	// 2. 编译 inheritance.c (确保能编译)
-	logger.Infof("Compiling inheritance.c...")
-	cmd := exec.Command("clang",
-		"-ggdb3", "-gdwarf-4", "-O0", "-Qunused-arguments",
-		"-std=c11", "-Wall", "-Werror", "-Wextra",
-		"-Wno-sign-compare", "-Wno-unused-parameter", "-Wno-unused-variable",
-		"-lm", "-o", "inheritance", "inheritance.c")
-	cmd.Dir = workDir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("inheritance.c does not compile: %s\n%s", err, string(out))
-	}
-	logger.Successf("inheritance.c compiles")
-
-	// 3. 创建测试程序
+	// 创建测试程序
 	// 读取学生的 inheritance.c，将 main 重命名为 distro_main
 	inheritanceCode, err := harness.ReadFile("inheritance.c")
 	if err != nil {
@@ -72,7 +59,7 @@ func testInheritance(harness *test_case_harness.TestCaseHarness) error {
 
 	// 编译测试程序
 	logger.Infof("Compiling test harness...")
-	cmd = exec.Command("clang",
+	cmd := exec.Command("clang",
 		"-ggdb3", "-gdwarf-4", "-O0", "-Qunused-arguments",
 		"-std=c11", "-Wall", "-Wextra",
 		"-Wno-sign-compare", "-Wno-unused-parameter", "-Wno-unused-variable",

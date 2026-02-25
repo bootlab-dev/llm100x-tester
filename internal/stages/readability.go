@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bootlab-dev/llm100x-tester/internal/helpers"
 	"github.com/bootlab-dev/tester-utils/runner"
 	"github.com/bootlab-dev/tester-utils/test_case_harness"
 	"github.com/bootlab-dev/tester-utils/tester_definition"
@@ -12,9 +11,16 @@ import (
 
 func readabilityTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "readability",
-		Timeout:  30 * time.Second,
-		TestFunc: testReadability,
+		Slug:          "readability",
+		Timeout:       30 * time.Second,
+		TestFunc:      testReadability,
+		RequiredFiles: []string{"readability.c"},
+		CompileStep: &tester_definition.CompileStep{
+			Language:         "c",
+			Source:           "readability.c",
+			Output:           "readability",
+			IncludeParentDir: true,
+		},
 	}
 }
 
@@ -22,21 +28,7 @@ func testReadability(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 readability.c 文件存在
-	logger.Infof("Checking readability.c exists...")
-	if !harness.FileExists("readability.c") {
-		return fmt.Errorf("readability.c does not exist")
-	}
-	logger.Successf("readability.c exists")
-
-	// 2. 编译 readability.c
-	logger.Infof("Compiling readability.c...")
-	if err := helpers.CompileC(workDir, "readability.c", "readability", true); err != nil {
-		return fmt.Errorf("readability.c does not compile: %v", err)
-	}
-	logger.Successf("readability.c compiles")
-
-	// 3. 测试用例（完全对齐 CS50 check50）
+	// 测试用例（完全对齐 CS50 check50）
 	testCases := []struct {
 		input         string
 		expectedGrade string

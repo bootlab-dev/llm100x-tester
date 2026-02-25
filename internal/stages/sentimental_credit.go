@@ -11,9 +11,10 @@ import (
 
 func sentimentalCreditTestCase() tester_definition.TestCase {
 	return tester_definition.TestCase{
-		Slug:     "sentimental-credit",
-		Timeout:  30 * time.Second,
-		TestFunc: testSentimentalCredit,
+		Slug:          "sentimental-credit",
+		Timeout:       30 * time.Second,
+		TestFunc:      testSentimentalCredit,
+		RequiredFiles: []string{"credit.py"},
 	}
 }
 
@@ -21,14 +22,7 @@ func testSentimentalCredit(harness *test_case_harness.TestCaseHarness) error {
 	logger := harness.Logger
 	workDir := harness.SubmissionDir
 
-	// 1. 检查 credit.py 文件存在
-	logger.Infof("Checking credit.py exists...")
-	if !harness.FileExists("credit.py") {
-		return fmt.Errorf("credit.py does not exist")
-	}
-	logger.Successf("credit.py exists")
-
-	// 2. 测试用例 (对齐 CS50 check50)
+	// 测试用例 (对齐 CS50 check50)
 	tests := []struct {
 		input    string
 		expected string
